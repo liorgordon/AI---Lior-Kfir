@@ -4,7 +4,7 @@ from deliveries import *
 from matplotlib import pyplot as plt
 import numpy as np
 from typing import List, Union, Optional
-#LIiorrrrrrr
+
 # Load the streets map
 streets_map = StreetsMap.load_from_csv(Consts.get_data_file_path("tlv_streets_map.csv"))
 
