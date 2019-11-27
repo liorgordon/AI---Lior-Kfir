@@ -125,6 +125,10 @@ def toy_map_problem_experiments():
     # TODO: create an instance of `AStar` with the `AirDistHeuristic`,
     #       solve the same `toy_map_problem` with it and print the results (as before).
     # exit()  # TODO: remove!
+    # a_s = AStar(AirDistHeuristic)
+    # res = a_s.solve_problem(toy_map_problem)
+    # print(res)
+    # exit()  # TODO: remove!
 
     # Ex.14
     # TODO:
@@ -172,13 +176,15 @@ def basic_deliveries_truck_problem_experiments():
     # Ex.16
     # TODO: create an instance of `UniformCost`, solve the `small_delivery_problem_with_distance_cost`
     #       with it and print the results.
-    exit()  # TODO: remove!
+    uc = UniformCost()
+    res = uc.solve_problem(small_delivery_problem_with_distance_cost)
+    print(res)
+    # exit()  # TODO: remove!
 
 
 def deliveries_truck_problem_with_astar_experiments():
     print()
-    print(
-        'Solve the truck deliveries problem (moderate input, only distance objective, A*, MaxAirDist & SumAirDist & MSTAirDist heuristics).')
+    print('Solve the truck deliveries problem (moderate input, only distance objective, A*, MaxAirDist & SumAirDist & MSTAirDist heuristics).')
 
     moderate_delivery_problem_with_distance_cost = get_deliveries_problem('moderate', OptimizationObjective.Distance)
 
