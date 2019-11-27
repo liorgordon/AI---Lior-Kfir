@@ -324,7 +324,12 @@ class DeliveriesTruckProblem(GraphProblem):
                 `list-comprehension` technique. Example: {i * 10 for i in range(100)} would create
                 a set of the items {0, 10, 20, 30, ..., 990}
         """
-        raise NotImplementedError()  # TODO: remove this line!
+        unpicked_del = self.get_deliveries_waiting_to_pick(state)
+        cur_set = set([state.current_location])
+        drop_set = {item.drop_location for item in unpicked_del.union(state.loaded_deliveries)}
+        pick_set = {item.pick_location for item in unpicked_del}
+        return cur_set.union(drop_set.union(pick_set))
+        # raise NotImplementedError()  # TODO: remove this line!
 
 
 class TruckDeliveriesInnerMapProblemHeuristic(HeuristicFunction):

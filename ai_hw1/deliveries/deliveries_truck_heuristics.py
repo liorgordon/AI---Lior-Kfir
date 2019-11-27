@@ -46,8 +46,10 @@ class TruckDeliveriesMaxAirDistHeuristic(HeuristicFunction):
         all_junctions_in_remaining_truck_path = self.problem.get_all_junctions_in_remaining_truck_path(state)
         if len(all_junctions_in_remaining_truck_path) < 2:
             return 0
-
-        total_distance_lower_bound = 10  # TODO: modify this line.
+        total_distance_lower_bound = max(self.cached_air_distance_calculator.get_air_distance_between_junctions(j1, j2)
+                                        for j1 in all_junctions_in_remaining_truck_path
+                                        for j2 in all_junctions_in_remaining_truck_path
+                                        if j1 != j2)
 
         return self.problem.get_cost_lower_bound_from_distance_lower_bound(total_distance_lower_bound)
 

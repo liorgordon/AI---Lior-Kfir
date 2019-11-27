@@ -158,9 +158,9 @@ def basic_deliveries_truck_problem_experiments():
     # Ex.16
     # TODO: create an instance of `UniformCost`, solve the `small_delivery_problem_with_distance_cost`
     #       with it and print the results.
-    uc = UniformCost()
-    res = uc.solve_problem(small_delivery_problem_with_distance_cost)
-    print(res)
+    # uc = UniformCost()
+    # res = uc.solve_problem(small_delivery_problem_with_distance_cost)
+    # print(res)
     # exit()  # TODO: remove!
 
 
@@ -173,7 +173,10 @@ def deliveries_truck_problem_with_astar_experiments():
     # Ex.18
     # TODO: create an instance of `AStar` with the `TruckDeliveriesMaxAirDistHeuristic`,
     #       solve the `moderate_delivery_problem_with_distance_cost` with it and print the results.
-    exit()  # TODO: remove!
+    a_s = AStar(TruckDeliveriesMaxAirDistHeuristic)
+    res = a_s.solve_problem(moderate_delivery_problem_with_distance_cost)
+    print(res)
+    # exit()  # TODO: remove!
 
     # Ex.21
     # TODO: create an instance of `AStar` with the `TruckDeliveriesSumAirDistHeuristic`,
