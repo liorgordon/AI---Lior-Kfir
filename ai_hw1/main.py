@@ -101,15 +101,18 @@ def toy_map_problem_experiments():
     #       solve the same `toy_map_problem` with it and print the results (as before).
     # Notice: AStar constructor receives the heuristic *type* (ex: `MyHeuristicClass`),
     #         and NOT an instance of the heuristic (eg: not `MyHeuristicClass()`).
-    a_s = AStar(AirDistHeuristic)
-    res = a_s.solve_problem(toy_map_problem)
-    print(res)
+    # a_s = AStar(NullHeuristic)
+    # res = a_s.solve_problem(toy_map_problem)
+    # print(res)
 
 
     # Ex.13
     # TODO: create an instance of `AStar` with the `AirDistHeuristic`,
     #       solve the same `toy_map_problem` with it and print the results (as before).
-    exit()  # TODO: remove!
+    # a_s = AStar(AirDistHeuristic)
+    # res = a_s.solve_problem(toy_map_problem)
+    # print(res)
+    # exit()  # TODO: remove!
 
     # Ex.14
     # TODO:
@@ -120,7 +123,7 @@ def toy_map_problem_experiments():
     #     (upper in this file).
     #  3. Call here the function `run_astar_for_weights_in_range()`
     #     with `AirDistHeuristic` and `toy_map_problem`.
-    exit()  # TODO: remove!
+    # exit()  # TODO: remove!
 
 
 # --------------------------------------------------------------------
@@ -155,7 +158,10 @@ def basic_deliveries_truck_problem_experiments():
     # Ex.16
     # TODO: create an instance of `UniformCost`, solve the `small_delivery_problem_with_distance_cost`
     #       with it and print the results.
-    exit()  # TODO: remove!
+    uc = UniformCost()
+    res = uc.solve_problem(small_delivery_problem_with_distance_cost)
+    print(res)
+    # exit()  # TODO: remove!
 
 
 def deliveries_truck_problem_with_astar_experiments():
