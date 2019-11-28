@@ -1,5 +1,6 @@
 from typing import *
 from dataclasses import dataclass
+from weakref import finalize
 
 from framework import *
 from .map_problem import MapProblem, MapState
@@ -191,49 +192,49 @@ class DeliveriesTruckProblem(GraphProblem):
         run a loop on all possible drops and their costs
         """
 
-        assert isinstance(state_to_expand, DeliveriesTruckState)
-        cur_state = state_to_expand
-        for picking_item in self.get_deliveries_waiting_to_pick(cur_state):
-            if picking_item.nr_packages <= (self.problem_input.delivery_truck.max_nr_loaded_packages - cur_state.get_total_nr_packages_loaded()):
-                succ_state = DeliveriesTruckState(cur_state.loaded_deliveries.union(frozenset([picking_item])), cur_state.dropped_deliveries, picking_item.pick_location)
-                yield OperatorResult(successor_state=succ_state, operator_cost=self.map_distance_finder.get_map_cost_between(cur_state.current_location, picking_item.pick_location))
-        for dropping_item in cur_state.loaded_deliveries:
-            succ_state = DeliveriesTruckState(cur_state.loaded_deliveries.difference(frozenset([dropping_item])), cur_state.dropped_deliveries.union(frozenset([dropping_item])), dropping_item.drop_location)
-            yield OperatorResult(successor_state=succ_state, operator_cost=self.map_distance_finder.get_map_cost_between(cur_state.current_location, dropping_item.drop_location))
+        # assert isinstance(state_to_expand, DeliveriesTruckState)
+        # cur_state = state_to_expand
+        # for picking_item in self.get_deliveries_waiting_to_pick(cur_state):
+        #     if picking_item.nr_packages <= (self.problem_input.delivery_truck.max_nr_loaded_packages - cur_state.get_total_nr_packages_loaded()):
+        #         succ_state = DeliveriesTruckState(cur_state.loaded_deliveries.union(frozenset([picking_item])), cur_state.dropped_deliveries, picking_item.pick_location)
+        #         yield OperatorResult(successor_state=succ_state, operator_cost=self.map_distance_finder.get_map_cost_between(cur_state.current_location, picking_item.pick_location))
+        # for dropping_item in cur_state.loaded_deliveries:
+        #     succ_state = DeliveriesTruckState(cur_state.loaded_deliveries.difference(frozenset([dropping_item])), cur_state.dropped_deliveries.union(frozenset([dropping_item])), dropping_item.drop_location)
+        #     yield OperatorResult(successor_state=succ_state, operator_cost=self.map_distance_finder.get_map_cost_between(cur_state.current_location, dropping_item.drop_location))
 
-        # for delivery in state_to_expand.loaded_deliveries:
-        #     suc_loaded = set()
-        #     suc_loaded = suc_loaded.union(state_to_expand.loaded_deliveries)
-        #     suc_loaded.remove(delivery)
-        #     suc_loaded = frozenset(suc_loaded)
-        #
-        #     suc_dropped = set()
-        #     suc_dropped.add(delivery)
-        #     suc_dropped = frozenset(suc_dropped.union(state_to_expand.dropped_deliveries))
-        #
-        #     succ_state = DeliveriesTruckState(loaded_deliveries=suc_loaded,
-        #                                       dropped_deliveries=suc_dropped,
-        #                                       current_location=delivery.drop_location)
-        #     cost = self.map_distance_finder.get_map_cost_between(state_to_expand.current_location,
-        #                                                          delivery.drop_location)
-        #     yield OperatorResult(successor_state=succ_state, operator_cost=cost)
-        #
-        #     # pick
-        # for delivery in self.get_deliveries_waiting_to_pick(state_to_expand):
-        #     #  in pick mode
-        #     space_in_truck = self.problem_input.delivery_truck.max_nr_loaded_packages - \
-        #                      state_to_expand.get_total_nr_packages_loaded()
-        #     if delivery.nr_packages <= space_in_truck:
-        #         succ_loaded = set()
-        #         succ_loaded.add(delivery)
-        #         succ_loaded = frozenset(succ_loaded.union(state_to_expand.loaded_deliveries))
-        #         succ_state = DeliveriesTruckState(loaded_deliveries=succ_loaded,
-        #                                           dropped_deliveries=state_to_expand.dropped_deliveries,
-        #                                           current_location=delivery.pick_location)
-        #         cost = self.map_distance_finder.get_map_cost_between(state_to_expand.current_location,
-        #                                                              delivery.pick_location)
-        #         x = OperatorResult(successor_state=succ_state, operator_cost=cost)
-        #         yield OperatorResult(successor_state=succ_state, operator_cost=cost)
+        for delivery in state_to_expand.loaded_deliveries:
+            suc_loaded = set()
+            suc_loaded = suc_loaded.union(state_to_expand.loaded_deliveries)
+            suc_loaded.remove(delivery)
+            suc_loaded = frozenset(suc_loaded)
+
+            suc_dropped = set()
+            suc_dropped.add(delivery)
+            suc_dropped = frozenset(suc_dropped.union(state_to_expand.dropped_deliveries))
+
+            succ_state = DeliveriesTruckState(loaded_deliveries=suc_loaded,
+                                              dropped_deliveries=suc_dropped,
+                                              current_location=delivery.drop_location)
+            cost = self.map_distance_finder.get_map_cost_between(state_to_expand.current_location,
+                                                                 delivery.drop_location)
+            yield OperatorResult(successor_state=succ_state, operator_cost=cost)
+
+            # pick
+        for delivery in self.get_deliveries_waiting_to_pick(state_to_expand):
+            #  in pick mode
+            space_in_truck = self.problem_input.delivery_truck.max_nr_loaded_packages - \
+                             state_to_expand.get_total_nr_packages_loaded()
+            if delivery.nr_packages <= space_in_truck:
+                succ_loaded = set()
+                succ_loaded.add(delivery)
+                succ_loaded = frozenset(succ_loaded.union(state_to_expand.loaded_deliveries))
+                succ_state = DeliveriesTruckState(loaded_deliveries=succ_loaded,
+                                                  dropped_deliveries=state_to_expand.dropped_deliveries,
+                                                  current_location=delivery.pick_location)
+                cost = self.map_distance_finder.get_map_cost_between(state_to_expand.current_location,
+                                                                     delivery.pick_location)
+                x = OperatorResult(successor_state=succ_state, operator_cost=cost)
+                yield OperatorResult(successor_state=succ_state, operator_cost=cost)
 
         # raise NotImplementedError()  # TODO: remove this line!
 
@@ -307,9 +308,9 @@ class DeliveriesTruckProblem(GraphProblem):
                 generated set.
             Note: This method can be implemented using a single line of code.
         """
-        loaded = state.loaded_deliveries
-        items = loaded.union(state.dropped_deliveries)
-        return set(self.problem_input.deliveries).difference(items)
+        # loaded = state.loaded_deliveries
+        # items = loaded.union(state.dropped_deliveries)
+        return (set(self.problem_input.deliveries) - state.dropped_deliveries) - state.loaded_deliveries
         # raise NotImplementedError()  # TODO: remove this line!
 
     def get_all_junctions_in_remaining_truck_path(self, state: DeliveriesTruckState) -> Set[Junction]:
@@ -325,10 +326,11 @@ class DeliveriesTruckProblem(GraphProblem):
                 a set of the items {0, 10, 20, 30, ..., 990}
         """
         unpicked_del = self.get_deliveries_waiting_to_pick(state)
-        cur_set = set([state.current_location])
-        drop_set = {item.drop_location for item in unpicked_del.union(state.loaded_deliveries)}
+        drop_set = {item.drop_location for item in state.loaded_deliveries.union(unpicked_del)}
         pick_set = {item.pick_location for item in unpicked_del}
-        return cur_set.union(drop_set.union(pick_set))
+        final_set = pick_set.union(drop_set)
+        final_set.add(state.current_location)
+        return final_set
         # raise NotImplementedError()  # TODO: remove this line!
 
 

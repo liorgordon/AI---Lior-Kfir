@@ -107,7 +107,7 @@ def toy_map_problem_experiments():
 
     # Ex.10
     # TODO: Just run it and inspect the printed result.
-    toy_map_problem = MapProblem(streets_map, 54, 549)
+    # toy_map_problem = MapProblem(streets_map, 54, 549)
     # uc = UniformCost()
     # res = uc.solve_problem(toy_map_problem)
     # print(res)
@@ -139,8 +139,8 @@ def toy_map_problem_experiments():
     #     (upper in this file).
     #  3. Call here the function `run_astar_for_weights_in_range()`
     #     with `AirDistHeuristic` and `toy_map_problem`.
-    run_astar_for_weights_in_range(AirDistHeuristic, toy_map_problem, 20)
-    exit()  # TODO: remove!
+    # run_astar_for_weights_in_range(AirDistHeuristic, toy_map_problem, 20)
+    # exit()  # TODO: remove!
 
 
 # --------------------------------------------------------------------
@@ -191,15 +191,19 @@ def deliveries_truck_problem_with_astar_experiments():
     # Ex.18
     # TODO: create an instance of `AStar` with the `TruckDeliveriesMaxAirDistHeuristic`,
     #       solve the `moderate_delivery_problem_with_distance_cost` with it and print the results.
-    a_s = AStar(TruckDeliveriesMaxAirDistHeuristic)
-    res = a_s.solve_problem(moderate_delivery_problem_with_distance_cost)
-    print(res)
+    # a_s = AStar(TruckDeliveriesMaxAirDistHeuristic)
+    # res = a_s.solve_problem(moderate_delivery_problem_with_distance_cost)
+    # print(res)
     # exit()  # TODO: remove!
 
     # Ex.21
     # TODO: create an instance of `AStar` with the `TruckDeliveriesSumAirDistHeuristic`,
     #       solve the `moderate_delivery_problem_with_distance_cost` with it and print the results.
-    exit()  # TODO: remove!
+    a_s = AStar(TruckDeliveriesSumAirDistHeuristic)
+    res = a_s.solve_problem(moderate_delivery_problem_with_distance_cost)
+    print(res)
+
+    # exit()  # TODO: remove!
 
     # Ex.24
     # TODO: create an instance of `AStar` with the `TruckDeliveriesMSTAirDistHeuristic`,

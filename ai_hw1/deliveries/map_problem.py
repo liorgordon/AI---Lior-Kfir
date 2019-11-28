@@ -73,10 +73,11 @@ class MapProblem(GraphProblem):
         #  Note: Generally, in order to check whether a variable is set to None you should use the expression:
         #        `my_variable_to_check is None`, and particularly do NOT use comparison (==).
         for link in junction.outgoing_links:
+            succ = MapState(link.target)
             if self.road_cost_fn is None:
-                yield OperatorResult(successor_state=MapState(link.target), operator_cost=link.distance)
+                yield OperatorResult(successor_state=succ, operator_cost=link.distance)
             else:
-                yield OperatorResult(successor_state=MapState(link.target), operator_cost=self.road_cost_fn(link))
+                yield OperatorResult(successor_state=succ, operator_cost=self.road_cost_fn(link))
 
     def is_goal(self, state: GraphProblemState) -> bool:
         """
