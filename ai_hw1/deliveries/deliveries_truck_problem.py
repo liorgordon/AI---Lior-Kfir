@@ -263,10 +263,14 @@ class DeliveriesTruckProblem(GraphProblem):
         """
         optimal_velocity, gas_cost_per_meter = self.problem_input.delivery_truck.calc_optimal_driving_parameters(
             optimization_objective=self.optimization_objective, max_driving_speed=link.max_speed)
+        if link.is_toll_road:
+            money = (gas_cost_per_meter + self.problem_input.toll_road_cost_per_meter) * link.distance
+        else:
+            money = gas_cost_per_meter*link.distance
         return DeliveryCost(
             distance_cost=link.distance,
-            time_cost=0,  # TODO: modify this value!
-            money_cost=0,  # TODO: modify this value!
+            time_cost=link.distance / optimal_velocity,
+            money_cost=money,  # TODO: modify this value!
             optimization_objective=self.optimization_objective)
 
     def get_zero_cost(self) -> Cost:
@@ -293,10 +297,12 @@ class DeliveriesTruckProblem(GraphProblem):
         if self.optimization_objective == OptimizationObjective.Distance:
             return total_distance_lower_bound
         elif self.optimization_objective == OptimizationObjective.Time:
-            raise NotImplementedError()  # TODO: remove this line and complete the implementation of this case!
+            return total_distance_lower_bound / MAX_ROAD_SPEED
         else:
+            # since we're expecting a lower bound we'll enter the toll to be false
             assert self.optimization_objective == OptimizationObjective.Money
-            raise NotImplementedError()  # TODO: remove this line and complete the implementation of this case!
+            remaining_roads = Link(0, 0, total_distance_lower_bound, 0, MAX_ROAD_SPEED, False)
+            return self._calc_map_road_cost(remaining_roads).money_cost
 
     def get_deliveries_waiting_to_pick(self, state: DeliveriesTruckState) -> Set[Delivery]:
         """
