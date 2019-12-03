@@ -55,7 +55,7 @@ class AStarEpsilon(AStar):
          the right methods to use (you might want to peek the head node, to
          pop/push nodes and to query whether the queue is empty).
         For each node (candidate) in the created focal, calculate its priority
-         by callingthe function `self.within_focal_priority_function` on it.
+         by calling the function `self.within_focal_priority_function` on it.
          This function expects to get 3 values: the node, the problem and the
          solver (self). You can create an array of these priority value. Then,
          use `np.argmin()` to find the index of the item (within this array)
@@ -68,5 +68,21 @@ class AStarEpsilon(AStar):
          method should be kept in the open queue at the end of this method, except
          for the extracted (and returned) node.
         """
-
-        raise NotImplementedError()  # TODO: remove this line!
+        if self.open.is_empty():
+            return None
+        eps_list = []
+        focal_size = 0
+        if self.max_nr_states_to_expand is not None:
+            nr_lim = self.max_nr_states_to_expand
+        else:
+            nr_lim = self.open.__len__()
+        focal_limit = self.open.peek_next_node().expanding_priority * (1+self.focal_epsilon)
+        while focal_size < nr_lim and self.open.peek_next_node().expanding_priority <= focal_limit:
+            eps_list.append(self.open.pop_next_node())
+            focal_size += 1
+        focal_priority = [self.within_focal_priority_function(x, problem, self) for x in eps_list]
+        min_idx = np.argmin(focal_priority)
+        min_node = eps_list.pop(min_idx)
+        for node in eps_list:
+            self.open.push_node(node)
+        return min_node

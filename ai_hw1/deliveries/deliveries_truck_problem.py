@@ -291,15 +291,15 @@ class DeliveriesTruckProblem(GraphProblem):
             Remember: The return value should be a real lower bound. This is required for the
                 heuristic to be acceptable.
         """
-
-        link = Link(source=0, target=0, distance=total_distance_lower_bound, highway_type=0, max_speed=1)
         if self.optimization_objective == OptimizationObjective.Distance:
             return total_distance_lower_bound
         elif self.optimization_objective == OptimizationObjective.Time:
-            return total_distance_lower_bound/MAX_ROAD_SPEED
+            return total_distance_lower_bound / MAX_ROAD_SPEED
         else:
+            # since we're expecting a lower bound we'll enter the toll to be false
             assert self.optimization_objective == OptimizationObjective.Money
-            return self._calc_map_road_cost(link).money_cost
+            remaining_roads = Link(0, 0, total_distance_lower_bound, 0, MAX_ROAD_SPEED, False)
+            return self._calc_map_road_cost(remaining_roads).money_cost
 
     def get_deliveries_waiting_to_pick(self, state: DeliveriesTruckState) -> Set[Delivery]:
         """

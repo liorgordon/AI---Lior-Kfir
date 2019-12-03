@@ -214,8 +214,8 @@ def deliveries_truck_problem_with_astar_experiments():
 
 
 def deliveries_truck_problem_with_weighted_astar_experiments():
-    print()
-    print('Solve the truck deliveries problem (small & moderate input, only distance objective, wA*).')
+    # print()
+    # print('Solve the truck deliveries problem (small & moderate input, only distance objective, wA*).')
 
     small_delivery_problem_with_distance_cost = get_deliveries_problem('small', OptimizationObjective.Distance)
     moderate_delivery_problem_with_distance_cost = get_deliveries_problem('moderate', OptimizationObjective.Distance)
@@ -230,8 +230,8 @@ def deliveries_truck_problem_with_weighted_astar_experiments():
     # TODO: Call here the function `run_astar_for_weights_in_range()`
     #       with `TruckDeliveriesSumAirDistHeuristic`
     #       over the `moderate_delivery_problem_with_distance_cost`.
-    run_astar_for_weights_in_range(TruckDeliveriesMSTAirDistHeuristic, moderate_delivery_problem_with_distance_cost, 20)
-    print(res)
+    # run_astar_for_weights_in_range(TruckDeliveriesMSTAirDistHeuristic, moderate_delivery_problem_with_distance_cost, 20)
+    # print(res)
 
 
 def multiple_objectives_deliveries_truck_problem_experiments():
@@ -280,7 +280,13 @@ def deliveries_truck_problem_with_astar_epsilon_experiments():
     #       solve the `moderate_delivery_problem_with_distance_cost` with it and print the results.
     #       use focal_epsilon=0.03, and  max_focal_size=40.
     #       use within_focal_priority_function=within_focal_h_sum_priority_function
-    exit()  # TODO: remove!
+    # a_s_eps = AStarEpsilon(heuristic_function_type=TruckDeliveriesMSTAirDistHeuristic,
+    #                        within_focal_priority_function=within_focal_h_sum_priority_function,
+    #                        focal_epsilon=0.03,
+    #                        max_focal_size=40)
+    # res = a_s_eps.solve_problem(moderate_delivery_problem_with_distance_cost)
+    # print(res)
+
 
 
 def deliveries_truck_problem_anytime_astar_experiments():
@@ -294,7 +300,10 @@ def deliveries_truck_problem_anytime_astar_experiments():
     # TODO: create an instance of `AnytimeAStar` once with the `TruckDeliveriesMSTAirDistHeuristic`, with
     #       `max_nr_states_to_expand_per_iteration` set to 50, solve the
     #       `moderate_delivery_problem_with_distance_cost` with it and print the results.
-    exit()  # TODO: remove!
+    anytime_as = AnytimeAStar(heuristic_function_type=TruckDeliveriesMSTAirDistHeuristic,
+                              max_nr_states_to_expand_per_iteration=50)
+    res = anytime_as.solve_problem(moderate_delivery_problem_with_distance_cost)
+    print(res)
 
 
 def big_deliveries_truck_problem_with_non_acceptable_heuristic_and_anytime_astar_experiments():
@@ -308,8 +317,14 @@ def big_deliveries_truck_problem_with_non_acceptable_heuristic_and_anytime_astar
     # TODO: create an instance of `AnytimeAStar` once with the `TruckDeliveriesSumAirDistHeuristic`,
     #       and then with the `TruckDeliveriesMSTAirDistHeuristic`, both with `max_nr_states_to_expand_per_iteration`
     #       set to 400, solve the `big_delivery_problem_with_distance_cost` with it and print the results.
-    exit()  # TODO: remove!
-
+    anytime_as = AnytimeAStar(heuristic_function_type=TruckDeliveriesSumAirDistHeuristic,
+                              max_nr_states_to_expand_per_iteration=400)
+    res = anytime_as.solve_problem(big_delivery_problem_with_distance_cost)
+    print(res)
+    anytime_as = AnytimeAStar(heuristic_function_type=TruckDeliveriesMSTAirDistHeuristic,
+                              max_nr_states_to_expand_per_iteration=400)
+    res = anytime_as.solve_problem(big_delivery_problem_with_distance_cost)
+    print(res)
 
 def run_all_experiments():
     # toy_map_problem_experiments()
