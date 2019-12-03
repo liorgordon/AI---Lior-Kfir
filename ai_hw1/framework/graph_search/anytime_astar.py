@@ -58,7 +58,7 @@ class AnytimeAStar(GraphProblemSolver):
             best_heuristic_weight = 1
 
             # Invariant being hold during the loop:
-            #   There is a solution using `high_heuristic_weight`,
+            #   There is a solution usin g `high_heuristic_weight`,
             #   but there is no solution using `low_heuristic_weight`.
             low_heuristic_weight = 0.5
             high_heuristic_weight = 1.0
@@ -88,12 +88,12 @@ class AnytimeAStar(GraphProblemSolver):
                 total_nr_expanded_states += cur_solver_res.nr_expanded_states
                 max_nr_stored_states = max(max_nr_stored_states, cur_solver_res.max_nr_stored_states)
                 if cur_solver_res.is_solution_found:
-                    low_heuristic_weight = cur_w
+                    high_heuristic_weight = cur_w
                     if cur_solver_res.solution_g_cost < best_solution.solution_g_cost:
                         best_solution = cur_solver_res
-                    best_heuristic_weight = cur_w
+                        best_heuristic_weight = cur_w
                 else:
-                    high_heuristic_weight = cur_w
+                    low_heuristic_weight = cur_w
         self.solver_name = f'{self.__class__.solver_name} (h={best_solution.solver.heuristic_function.heuristic_name}, w={best_heuristic_weight:.3f})'
         return best_solution._replace(
             solver=self, nr_expanded_states=total_nr_expanded_states, max_nr_stored_states=max_nr_stored_states,

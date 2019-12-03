@@ -72,17 +72,18 @@ class AStarEpsilon(AStar):
             return None
         eps_list = []
         focal_size = 0
-        if self.max_nr_states_to_expand is not None:
-            nr_lim = self.max_nr_states_to_expand
+        if self.max_focal_size is not None:
+            nr_lim = self.max_focal_size
         else:
             nr_lim = self.open.__len__()
         focal_limit = self.open.peek_next_node().expanding_priority * (1+self.focal_epsilon)
-        while focal_size < nr_lim and self.open.peek_next_node().expanding_priority <= focal_limit:
+        while focal_size < nr_lim and not self.open.is_empty() and self.open.peek_next_node().expanding_priority <= focal_limit:
             eps_list.append(self.open.pop_next_node())
             focal_size += 1
         focal_priority = [self.within_focal_priority_function(x, problem, self) for x in eps_list]
         min_idx = np.argmin(focal_priority)
         min_node = eps_list.pop(min_idx)
+        self.close.add_node(min_node)
         for node in eps_list:
             self.open.push_node(node)
         return min_node

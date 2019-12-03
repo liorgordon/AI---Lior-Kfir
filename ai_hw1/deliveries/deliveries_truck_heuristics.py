@@ -146,4 +146,3 @@ class TruckDeliveriesMSTAirDistHeuristic(HeuristicFunction):
         edge_list = list(mst)
         mst_weights = sum(edge[2]['weight'] for edge in edge_list)
         return mst_weights
-        raise NotImplementedError()  # TODO: remove this line!
