@@ -263,14 +263,11 @@ class DeliveriesTruckProblem(GraphProblem):
         """
         optimal_velocity, gas_cost_per_meter = self.problem_input.delivery_truck.calc_optimal_driving_parameters(
             optimization_objective=self.optimization_objective, max_driving_speed=link.max_speed)
-        if link.is_toll_road:
-            money = (gas_cost_per_meter + self.problem_input.toll_road_cost_per_meter) * link.distance
-        else:
-            money = gas_cost_per_meter*link.distance
         return DeliveryCost(
             distance_cost=link.distance,
-            time_cost=link.distance / optimal_velocity,
-            money_cost=money,  # TODO: modify this value!
+            time_cost=link.distance/optimal_velocity,
+            money_cost=link.distance*(gas_cost_per_meter + self.problem_input.toll_road_cost_per_meter) if
+            link.is_toll_road else link.distance*gas_cost_per_meter,
             optimization_objective=self.optimization_objective)
 
     def get_zero_cost(self) -> Cost:
