@@ -117,7 +117,7 @@ def toy_map_problem_experiments():
     #       solve the same `toy_map_problem` with it and print the results (as before).
     # Notice: AStar constructor receives the heuristic *type* (ex: `MyHeuristicClass`),
     #         and NOT an instance of the heuristic (eg: not `MyHeuristicClass()`).
-    a_s = AStar(AirDistHeuristic)
+    a_s = AStar(NullHeuristic)
     res = a_s.solve_problem(toy_map_problem)
     print(res)
 
@@ -323,12 +323,12 @@ def big_deliveries_truck_problem_with_non_acceptable_heuristic_and_anytime_astar
 def run_all_experiments():
     # toy_map_problem_experiments()
     # basic_deliveries_truck_problem_experiments()
-    deliveries_truck_problem_with_astar_experiments()
-    deliveries_truck_problem_with_weighted_astar_experiments()
-    multiple_objectives_deliveries_truck_problem_experiments()
+    # deliveries_truck_problem_with_astar_experiments()
+    # deliveries_truck_problem_with_weighted_astar_experiments()
+    # multiple_objectives_deliveries_truck_problem_experiments()
     # deliveries_truck_problem_with_astar_epsilon_experiments()
-    # deliveries_truck_problem_anytime_astar_experiments()
-    # big_deliveries_truck_problem_with_non_acceptable_heuristic_and_anytime_astar_experiments()
+    deliveries_truck_problem_anytime_astar_experiments()
+    big_deliveries_truck_problem_with_non_acceptable_heuristic_and_anytime_astar_experiments()
 
 
 if __name__ == '__main__':
