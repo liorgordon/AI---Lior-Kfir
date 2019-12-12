@@ -321,12 +321,12 @@ def big_deliveries_truck_problem_with_non_acceptable_heuristic_and_anytime_astar
     print(res)
 
 def run_all_experiments():
-    # toy_map_problem_experiments()
-    # basic_deliveries_truck_problem_experiments()
-    # deliveries_truck_problem_with_astar_experiments()
-    # deliveries_truck_problem_with_weighted_astar_experiments()
-    # multiple_objectives_deliveries_truck_problem_experiments()
-    # deliveries_truck_problem_with_astar_epsilon_experiments()
+    toy_map_problem_experiments()
+    basic_deliveries_truck_problem_experiments()
+    deliveries_truck_problem_with_astar_experiments()
+    deliveries_truck_problem_with_weighted_astar_experiments()
+    multiple_objectives_deliveries_truck_problem_experiments()
+    deliveries_truck_problem_with_astar_epsilon_experiments()
     deliveries_truck_problem_anytime_astar_experiments()
     big_deliveries_truck_problem_with_non_acceptable_heuristic_and_anytime_astar_experiments()
 

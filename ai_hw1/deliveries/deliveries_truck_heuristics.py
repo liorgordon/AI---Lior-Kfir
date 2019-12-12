@@ -144,5 +144,4 @@ class TruckDeliveriesMSTAirDistHeuristic(HeuristicFunction):
         G.add_weighted_edges_from(edges)
         mst = nx.minimum_spanning_tree(G)
         edge_list = list(mst.edges(data=True))
-        mst_weights = sum(edge[2]['weight'] for edge in edge_list)
-        return mst_weights
+        return mst.size(weight='weight')
