@@ -2,7 +2,20 @@ from environment import Player, GameState, GameAction, get_next_state
 from utils import get_fitness
 import numpy as np
 from enum import Enum
+from scipy.spatial.distance import cityblock
 
+
+def _fruit_distance(state: GameState, player_index: int) -> float:
+    snake_manhattan_dists = sorted([cityblock(state.snakes[player_index].head, trophy_i)
+                                    for trophy_i in state.fruits_locations])
+    return (1 / snake_manhattan_dists[0]) * 100
+
+
+def _wall_distance(state, player_index):
+    snake_head = state.snakes[player_index].head
+    x_dist = min(state.board_size[0]-snake_head[1], snake_head[1])
+    y_dist = min(state.board_size[1] - snake_head[0], snake_head[0])
+    return min(x_dist, y_dist)*0.5
 
 def heuristic(state: GameState, player_index: int) -> float:
     """
@@ -12,7 +25,18 @@ def heuristic(state: GameState, player_index: int) -> float:
     state.snakes array as well.
     :return:
     """
-    # Insert your code here...
+    fruit_cost = _fruit_distance(state, player_index)
+    wall_cost = _wall_distance(state, player_index)
+
+    # if not state.snakes[player_index].alive:
+    #     return state.snakes[player_index].length
+    # discount_factor = 0.5
+    # max_possible_fruits = len(state.fruits_locations) + sum([s.length for s in state.snakes
+    #                                                          if s.index != player_index and s.alive])
+    # turns_left = (state.game_duration_in_turns - state.turn_number)
+    # max_possible_fruits = min(max_possible_fruits, turns_left)
+    # optimistic_future_reward = discount_factor * (1 - discount_factor ** max_possible_fruits) / (1 - discount_factor)
+    # return state.snakes[player_index].length + optimistic_future_reward
     pass
 
 
@@ -24,6 +48,7 @@ class MinimaxAgent(Player):
     hint: use the 'agent_action' property to determine if it's the agents turn or the opponents' turn. You can pass
     'None' value (without quotes) to indicate that your agent haven't picked an action yet.
     """
+
     class Turn(Enum):
         AGENT_TURN = 'AGENT_TURN'
         OPPONENTS_TURN = 'OPPONENTS_TURN'
@@ -33,6 +58,7 @@ class MinimaxAgent(Player):
         This class is a wrapper class for a GameState. It holds the action of our agent as well, so we can model turns
         in the game (set agent_action=None to indicate that our agent has yet to pick an action).
         """
+
         def __init__(self, game_state: GameState, agent_action: GameAction):
             self.game_state = game_state
             self.agent_action = agent_action
@@ -93,4 +119,3 @@ class TournamentAgent(Player):
 if __name__ == '__main__':
     SAHC_sideways()
     local_search()
-
