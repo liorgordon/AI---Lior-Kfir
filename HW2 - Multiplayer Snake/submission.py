@@ -8,7 +8,7 @@ from scipy.spatial.distance import cityblock
 def _fruit_distance(state: GameState, player_index: int) -> float:
     snake_manhattan_dists = sorted([cityblock(state.snakes[player_index].head, trophy_i)
                                     for trophy_i in state.fruits_locations])
-    return (1 / snake_manhattan_dists[0]) * 100
+    return (1 / snake_manhattan_dists[0]) * 10
 
 
 def _wall_distance(state, player_index):
@@ -25,8 +25,12 @@ def heuristic(state: GameState, player_index: int) -> float:
     state.snakes array as well.
     :return:
     """
+    my_snake = state.snakes[player_index]
     fruit_cost = _fruit_distance(state, player_index)
     wall_cost = _wall_distance(state, player_index)
+    if my_snake.alive == False:
+        return my_snake.length
+    return my_snake.length*20 + fruit_cost + wall_cost
 
     # if not state.snakes[player_index].alive:
     #     return state.snakes[player_index].length
