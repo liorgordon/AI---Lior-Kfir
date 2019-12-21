@@ -8,7 +8,7 @@ from scipy.spatial.distance import cityblock
 def _fruit_distance(state: GameState, player_index: int) -> float:
     snake_manhattan_dists = sorted([cityblock(state.snakes[player_index].head, trophy_i)
                                     for trophy_i in state.fruits_locations])
-    return (1 / snake_manhattan_dists[0]) * 10
+    return (1 / (snake_manhattan_dists[0]+1)) * 100
 
 
 def _wall_distance(state, player_index):
@@ -30,7 +30,7 @@ def heuristic(state: GameState, player_index: int) -> float:
     wall_cost = _wall_distance(state, player_index)
     if my_snake.alive == False:
         return my_snake.length
-    return my_snake.length*20 + fruit_cost + wall_cost
+    return my_snake.length*200 + fruit_cost + wall_cost
     pass
 
 
@@ -42,6 +42,9 @@ class MinimaxAgent(Player):
     hint: use the 'agent_action' property to determine if it's the agents turn or the opponents' turn. You can pass
     'None' value (without quotes) to indicate that your agent haven't picked an action yet.
     """
+    depth = 0
+    curr_turn = None
+
 
     class Turn(Enum):
         AGENT_TURN = 'AGENT_TURN'
@@ -57,41 +60,58 @@ class MinimaxAgent(Player):
             self.game_state = game_state
             self.agent_action = agent_action
 
+
         @property
         def turn(self):
             return MinimaxAgent.Turn.AGENT_TURN if self.agent_action is None else MinimaxAgent.Turn.OPPONENTS_TURN
 
-    def get_action(self, state: GameState) -> GameAction:
-        # Insert your code here...
-        if self.TurnBasedGameState.turn ==  MinimaxAgent.Turn.AGENT_TURN:
-            return None
-        for act in GameAction:
-            for opponents_actions in state.get_possible_actions_dicts_given_action(act, player_index=self.player_index):
-
-
-
-
-
-
-        pass
-
-  best_actions = state.get_possible_actions(player_index=self.player_index)
+    def minimax(self, state, action):
+        if self.depth > 100 or not state.snakes[self.player_index].alive: #TODO - what about prediction of more then the numbers of turns
+            return heuristic(state, self.player_index)
         best_value = -np.inf
-        for action in state.get_possible_actions(player_index=self.player_index):
-            for opponents_actions in state.get_possible_actions_dicts_given_action(action, player_index=self.player_index):
-                opponents_actions[self.player_index] = action
-                next_state = get_next_state(state, opponents_actions)
-                h_value = self._heuristic(next_state)
+        worst_value = np.inf
+        self.depth = self.depth + 1
+        if self.curr_turn.turn == MinimaxAgent.Turn.AGENT_TURN:
+            self.curr_turn.curr_turn = MinimaxAgent.Turn.OPPONENTS_TURN
+            for our_action in state.get_possible_actions(player_index=self.player_index):
+                h_value = self.minimax(state, our_action)
                 if h_value > best_value:
                     best_value = h_value
-                    best_actions = [action]
-                elif h_value == best_value:
-                    best_actions.append(action)
+            return best_value
+        else:
+            self.curr_turn.curr_turn = MinimaxAgent.Turn.AGENT_TURN
+            for opponents_actions in state.get_possible_actions_dicts_given_action(action,
+                                                                        player_index=self.player_index):
+                next_state = get_next_state(state, opponents_actions)
+                h_value = self.minimax(next_state, None)
+                if h_value < worst_value:
+                    worst_value = h_value
+            return worst_value
 
-                if len(state.opponents_alive) > 2:
-                    # consider only 1 possible opponents actions to reduce time & memory:
-                    break
+    def get_action(self, state: GameState) -> GameAction:
+        # Insert your code here...
+        if self.curr_turn is None:
+            self.curr_turn = self.TurnBasedGameState(state, None)
+        best_value = -np.inf
+        best_actions = []
+        self.depth = self.depth + 1
+        self.curr_turn.curr_turn = MinimaxAgent.Turn.OPPONENTS_TURN
+        for our_action in state.get_possible_actions(player_index=self.player_index):
+            h_value = self.minimax(state, our_action)
+            if h_value > best_value:
+                best_value = h_value
+                best_actions = [our_action]
+            elif h_value == best_value:
+                best_actions.append(our_action)
         return np.random.choice(best_actions)
+
+
+
+        return np.random.choice(best_actions)
+
+
+
+
 class AlphaBetaAgent(MinimaxAgent):
     def get_action(self, state: GameState) -> GameAction:
         # Insert your code here...
