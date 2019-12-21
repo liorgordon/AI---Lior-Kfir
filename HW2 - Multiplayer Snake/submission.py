@@ -66,12 +66,13 @@ class MinimaxAgent(Player):
             return MinimaxAgent.Turn.AGENT_TURN if self.agent_action is None else MinimaxAgent.Turn.OPPONENTS_TURN
 
     def minimax(self, state, action):
-        if self.depth > 100 or not state.snakes[self.player_index].alive: #TODO - what about prediction of more then the numbers of turns
+        #check_if_winner =
+        if self.depth > 4 or not state.snakes[self.player_index].alive or state.is_terminal_state:
             return heuristic(state, self.player_index)
         best_value = -np.inf
         worst_value = np.inf
         self.depth = self.depth + 1
-        if self.curr_turn.turn == MinimaxAgent.Turn.AGENT_TURN:
+        if self.curr_turn.curr_turn == MinimaxAgent.Turn.AGENT_TURN:
             self.curr_turn.curr_turn = MinimaxAgent.Turn.OPPONENTS_TURN
             for our_action in state.get_possible_actions(player_index=self.player_index):
                 h_value = self.minimax(state, our_action)
@@ -82,6 +83,7 @@ class MinimaxAgent(Player):
             self.curr_turn.curr_turn = MinimaxAgent.Turn.AGENT_TURN
             for opponents_actions in state.get_possible_actions_dicts_given_action(action,
                                                                         player_index=self.player_index):
+                opponents_actions[self.player_index] = action
                 next_state = get_next_state(state, opponents_actions)
                 h_value = self.minimax(next_state, None)
                 if h_value < worst_value:
@@ -94,7 +96,7 @@ class MinimaxAgent(Player):
             self.curr_turn = self.TurnBasedGameState(state, None)
         best_value = -np.inf
         best_actions = []
-        self.depth = self.depth + 1
+        self.depth = 0
         self.curr_turn.curr_turn = MinimaxAgent.Turn.OPPONENTS_TURN
         for our_action in state.get_possible_actions(player_index=self.player_index):
             h_value = self.minimax(state, our_action)
@@ -104,11 +106,6 @@ class MinimaxAgent(Player):
             elif h_value == best_value:
                 best_actions.append(our_action)
         return np.random.choice(best_actions)
-
-
-
-        return np.random.choice(best_actions)
-
 
 
 
