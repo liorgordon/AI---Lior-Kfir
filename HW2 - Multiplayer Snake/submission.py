@@ -28,9 +28,9 @@ def heuristic(state: GameState, player_index: int) -> float:
     my_snake = state.snakes[player_index]
     fruit_cost = _fruit_distance(state, player_index)
     wall_cost = _wall_distance(state, player_index)
-    if my_snake.alive == False:
-        return my_snake.length
-    return my_snake.length*200 + fruit_cost + wall_cost
+    if not my_snake.alive:
+        return -1
+    return my_snake.length*200 + fruit_cost + wall_cost*1.25
     pass
 
 
@@ -66,28 +66,37 @@ class MinimaxAgent(Player):
             return MinimaxAgent.Turn.AGENT_TURN if self.agent_action is None else MinimaxAgent.Turn.OPPONENTS_TURN
 
     def minimax(self, state, action):
-        #check_if_winner =
-        if self.depth > 4 or not state.snakes[self.player_index].alive or state.is_terminal_state:
+        # if self.curr_turn.curr_turn == MinimaxAgent.Turn.AGENT_TURN:
+        #     print("entered minimax for agent, depth = {}\n".format(self.depth))
+        # if self.curr_turn.curr_turn == MinimaxAgent.Turn.OPPONENTS_TURN:
+        #     print("entered minimax for opponent, depth = {}\n".format(self.depth))
+        # if not state.is_within_grid_boundaries(state.snakes[self.player_index].head):
+        #     print("in the fucking if")
+        # if not state.snakes[self.player_index].alive:
+        #     print("in the fucking if2")
+        if self.depth > 3:
             return heuristic(state, self.player_index)
         best_value = -np.inf
         worst_value = np.inf
         self.depth = self.depth + 1
         if self.curr_turn.curr_turn == MinimaxAgent.Turn.AGENT_TURN:
-            self.curr_turn.curr_turn = MinimaxAgent.Turn.OPPONENTS_TURN
             for our_action in state.get_possible_actions(player_index=self.player_index):
+                self.curr_turn.curr_turn = MinimaxAgent.Turn.OPPONENTS_TURN
                 h_value = self.minimax(state, our_action)
                 if h_value > best_value:
                     best_value = h_value
+            self.depth = self.depth - 1
             return best_value
         else:
-            self.curr_turn.curr_turn = MinimaxAgent.Turn.AGENT_TURN
             for opponents_actions in state.get_possible_actions_dicts_given_action(action,
                                                                         player_index=self.player_index):
                 opponents_actions[self.player_index] = action
                 next_state = get_next_state(state, opponents_actions)
+                self.curr_turn.curr_turn = MinimaxAgent.Turn.AGENT_TURN
                 h_value = self.minimax(next_state, None)
                 if h_value < worst_value:
                     worst_value = h_value
+            self.depth = self.depth - 1
             return worst_value
 
     def get_action(self, state: GameState) -> GameAction:
@@ -96,7 +105,6 @@ class MinimaxAgent(Player):
             self.curr_turn = self.TurnBasedGameState(state, None)
         best_value = -np.inf
         best_actions = []
-        self.depth = 0
         self.curr_turn.curr_turn = MinimaxAgent.Turn.OPPONENTS_TURN
         for our_action in state.get_possible_actions(player_index=self.player_index):
             h_value = self.minimax(state, our_action)
@@ -110,9 +118,86 @@ class MinimaxAgent(Player):
 
 
 class AlphaBetaAgent(MinimaxAgent):
+    depth = 0
+    curr_turn = None
+
+    class Turn(Enum):
+        AGENT_TURN = 'AGENT_TURN'
+        OPPONENTS_TURN = 'OPPONENTS_TURN'
+
+    class TurnBasedGameState:
+        """
+        This class is a wrapper class for a GameState. It holds the action of our agent as well, so we can model turns
+        in the game (set agent_action=None to indicate that our agent has yet to pick an action).
+        """
+
+        def __init__(self, game_state: GameState, agent_action: GameAction):
+            self.game_state = game_state
+            self.agent_action = agent_action
+
+        @property
+        def turn(self):
+            return MinimaxAgent.Turn.AGENT_TURN if self.agent_action is None else MinimaxAgent.Turn.OPPONENTS_TURN
+
+    def abminimax(self, state, action, alpha, beta):
+        # if self.curr_turn.curr_turn == MinimaxAgent.Turn.AGENT_TURN:
+        #     print("entered ab for agent, depth = {}\n".format(self.depth))
+        # if self.curr_turn.curr_turn == MinimaxAgent.Turn.OPPONENTS_TURN:
+        #     print("entered ab for opponent, depth = {}\n".format(self.depth))
+        # if not state.is_within_grid_boundaries(state.snakes[self.player_index].head):
+        #     print("in the fucking if")
+        # if not state.snakes[self.player_index].alive:
+        #     print("in the fucking if2")
+        if self.depth > 3:
+            return heuristic(state, self.player_index)
+        best_value = -np.inf
+        worst_value = np.inf
+        self.depth = self.depth + 1
+        if self.curr_turn.curr_turn == MinimaxAgent.Turn.AGENT_TURN:
+            for our_action in state.get_possible_actions(player_index=self.player_index):
+                self.curr_turn.curr_turn = MinimaxAgent.Turn.OPPONENTS_TURN
+                h_value = self.abminimax(state, our_action, alpha, beta)
+                if h_value > best_value:
+                    best_value = h_value
+                    alpha = max(alpha, best_value)
+                if best_value >= beta:
+                    print("cut beta in depth: {}, beta is: {}, alpha is: {}".format(self.depth, beta, alpha))
+                    self.depth = self.depth - 1
+                    return np.inf
+            self.depth = self.depth - 1
+            return best_value
+        else:
+            for opponents_actions in state.get_possible_actions_dicts_given_action(action,
+                                                                                   player_index=self.player_index):
+                opponents_actions[self.player_index] = action
+                next_state = get_next_state(state, opponents_actions)
+                self.curr_turn.curr_turn = MinimaxAgent.Turn.AGENT_TURN
+                h_value = self.abminimax(next_state, None, alpha, beta)
+                if h_value < worst_value:
+                    worst_value = h_value
+                    beta = min(worst_value, beta)
+                if worst_value <= alpha:
+                    print("cut alpha in depth: {}, beta is: {}, alpha is: {}".format(self.depth, beta, alpha))
+                    self.depth = self.depth - 1
+                    return -np.inf
+            self.depth = self.depth - 1
+            return worst_value
+
     def get_action(self, state: GameState) -> GameAction:
         # Insert your code here...
-        pass
+        if self.curr_turn is None:
+            self.curr_turn = self.TurnBasedGameState(state, None)
+        best_value = -np.inf
+        best_actions = []
+        self.curr_turn.curr_turn = MinimaxAgent.Turn.OPPONENTS_TURN
+        for our_action in state.get_possible_actions(player_index=self.player_index):
+            h_value = self.abminimax(state, our_action, -np.inf, np.inf)
+            if h_value > best_value:
+                best_value = h_value
+                best_actions = [our_action]
+            elif h_value == best_value:
+                best_actions.append(our_action)
+        return np.random.choice(best_actions)
 
 
 def SAHC_sideways():
