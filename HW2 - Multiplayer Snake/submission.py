@@ -161,7 +161,7 @@ class AlphaBetaAgent(MinimaxAgent):
                 if best_value >= beta:
                     # print("cut beta in depth: {}, beta is: {}, alpha is: {}".format(D, beta, alpha))
                     return np.inf
-            if not state.game_state.snakes[self.player_index].alive:
+            # if not state.game_state.snakes[self.player_index].alive:
                 # print("i entered agent with a dead snake, returning {}", format(best_value))
             return best_value
         else:
