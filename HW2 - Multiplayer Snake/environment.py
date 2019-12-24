@@ -142,6 +142,10 @@ class SnakeAgent:
         :return:
         """
         assert self._next_action is not None
+        # if self.index == 0:
+        #     print("debug")
+        # if type(self._next_action) is not GameAction:
+        #     print("debug")
         assert self.alive
 
         self.reward = self.REWARD_FOR_BEING_ALIVE

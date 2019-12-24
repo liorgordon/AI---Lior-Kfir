@@ -209,36 +209,53 @@ def SAHC_sideways():
     3) print the best moves vector you found.
     :return:
     """
-    init_state = [GameAction.STRAIGHT, GameAction.LEFT, GameAction.STRAIGHT, GameAction.RIGHT]
+    init_state = (GameAction.STRAIGHT, GameAction.LEFT, GameAction.STRAIGHT, GameAction.RIGHT)
+    N = 50
     sideways = 0
-    limit = 5
-    for i in range(50 - len(init_state)):
+    limit = N
+    for i in range(N - len(init_state)):
         best_val = np.NINF
         best_states = None
         for j in range(3):
             tmp = init_state
-            if j == 1:
-                tmp.append(GameAction.RIGHT)
+            if j == 0:
+                tmp += (GameAction.RIGHT,)
+            elif j == 1:
+                tmp += (GameAction.STRAIGHT,)
             elif j == 2:
-                tmp.append(GameAction.STRAIGHT)
-            elif j == 3:
-                tmp.append(GameAction.LEFT)
+                tmp += (GameAction.LEFT,)
             new_val = get_fitness(tmp)
             if new_val > best_val:
                 best_val = new_val
-                best_states = tmp
+                best_states = [tmp]
             elif new_val == best_val:
                 best_states.append(tmp)
         state_fitness = get_fitness(init_state)
         if best_val > state_fitness:
-            init_state = np.random.choice(best_states)
+            new_move = np.random.choice(len(best_states))
+            init_state += (best_states[new_move][-1], )
             sideways = 0
+            M=best_val
         elif best_val == state_fitness and sideways <= limit:
-            init_state = np.random.choice(best_states)
+            new_move = np.random.choice(len(best_states))
+            init_state += (best_states[new_move][-1],)
             sideways = sideways + 1
         else:
-            return init_state
-    return init_state
+            break
+    if len(init_state) < N:
+        filler = tuple([GameAction.STRAIGHT] * (N-len(init_state)))
+        init_state += filler
+    print("the best combination I found was {} ", format(init_state))
+    print("and I got " + str(M))
+
+
+def GetAction(j):
+    switcher = {
+        0: GameAction.STRAIGHT,
+        1: GameAction.LEFT,
+        2: GameAction.RIGHT,
+    }
+    return switcher.get(j)
 
 
 def local_search():
@@ -254,6 +271,45 @@ def local_search():
     3) print the best moves vector you found.
     :return:
     """
+    init_state = (GameAction.STRAIGHT, GameAction.LEFT, GameAction.STRAIGHT, GameAction.RIGHT)
+    N = 50
+    sideways = 0
+    limit = N
+    for i in range(N - len(init_state)):
+        best_val = np.NINF
+        best_states = None
+        for j in range(3):
+            tmp = init_state
+            if j == 0:
+                tmp += (GameAction.RIGHT,)
+            elif j == 1:
+                tmp += (GameAction.STRAIGHT,)
+            elif j == 2:
+                tmp += (GameAction.LEFT,)
+            new_val = get_fitness(tmp)
+            if new_val > best_val:
+                best_val = new_val
+                best_states = [tmp]
+            elif new_val == best_val:
+                best_states.append(tmp)
+        state_fitness = get_fitness(init_state)
+        if best_val > state_fitness:
+            new_move = np.random.choice(len(best_states))
+            init_state += (best_states[new_move][-1],)
+            sideways = 0
+            M = best_val
+        elif best_val == state_fitness and sideways <= limit:
+            new_move = np.random.choice(len(best_states))
+            init_state += (best_states[new_move][-1],)
+            sideways = sideways + 1
+        else:
+            break
+    if len(init_state) < N:
+        filler = tuple([GameAction.STRAIGHT] * (N - len(init_state)))
+        init_state += filler
+    print("the best combination I found was {} ", format(init_state))
+    print("and I got " + str(M))
+
     pass
 
 
@@ -264,5 +320,6 @@ class TournamentAgent(Player):
 
 
 if __name__ == '__main__':
-    SAHC_sideways()
-    local_search()
+    # SAHC_sideways()
+    SAHC_sideways_vector()
+    # local_search()
