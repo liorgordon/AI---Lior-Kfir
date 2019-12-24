@@ -213,7 +213,36 @@ def SAHC_sideways():
     3) print the best moves vector you found.
     :return:
     """
-    pass
+    init_state = [GameAction.STRAIGHT, GameAction.LEFT, GameAction.STRAIGHT, GameAction.RIGHT]
+    sideways = 0
+    limit = 5
+    for i in range(50 - len(init_state)):
+        best_val = np.NINF
+        best_states = None
+        for j in range(3):
+            tmp = init_state
+            if j == 1:
+                tmp.append(GameAction.RIGHT)
+            elif j == 2:
+                tmp.append(GameAction.STRAIGHT)
+            elif j == 3:
+                tmp.append(GameAction.LEFT)
+            new_val = get_fitness(tmp)
+            if new_val > best_val:
+                best_val = new_val
+                best_states = tmp
+            elif new_val == best_val:
+                best_states.append(tmp)
+        state_fitness = get_fitness(init_state)
+        if best_val > state_fitness:
+            init_state = np.random.choice(best_states)
+            sideways = 0
+        elif best_val == state_fitness and sideways <= limit:
+            init_state = np.random.choice(best_states)
+            sideways = sideways + 1
+        else:
+            return init_state
+    return init_state
 
 
 def local_search():
