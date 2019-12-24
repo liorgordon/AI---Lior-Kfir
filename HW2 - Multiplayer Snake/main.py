@@ -17,7 +17,7 @@ def start_demo_game(n_agents: int, game_duration: int, board_width: int, board_h
 
 
 def start_game_with_players(players, game_duration: int, board_width: int, board_height: int, n_fruits: int,
-                            fast_run: bool = False, graphics_off: bool = False):
+                            fast_run: bool = False, graphics_off: bool = False, t):
     if len(players) < 1:
         print("The number of agents must be at least 1.")
     
@@ -25,7 +25,7 @@ def start_game_with_players(players, game_duration: int, board_width: int, board
                             grid_size=Grid2DSize(board_width, board_height),
                             n_fruits=n_fruits,
                             game_duration_in_turns=game_duration)
-    env.run_game(human_speed=not fast_run, render=not graphics_off)
+    env.run_game(human_speed=not fast_run, render=not graphics_off, t)
 
 
 def start_part_c(n_agents: int, game_duration: int, board_width: int, board_height: int,
@@ -65,7 +65,7 @@ def start_part_e(n_agents: int, game_duration: int, board_width: int, board_heig
 
 
 def start_custom_game(p1: str, p2: str, game_duration: int, board_width: int, board_height: int,
-                      n_fruits: int, fast_run: bool, graphics_off: bool, use_keyboard_listener: bool):
+                      n_fruits: int, fast_run: bool, graphics_off: bool, use_keyboard_listener: bool, t):
     def get_player(p: str):
         if p == 'KeyboardPlayer':
             return KeyboardPlayer(use_keyboard_listener=use_keyboard_listener)
@@ -88,10 +88,11 @@ def start_custom_game(p1: str, p2: str, game_duration: int, board_width: int, bo
                             board_width,
                             board_height,
                             n_fruits,
-                            fast_run=fast_run)
+                            fast_run=fast_run,
+                            t)
     
     
-def get_user_command(argv):
+def get_user_command(argv, t):
     usage_str = """
     USAGE: python main.py <options>
     """
@@ -163,7 +164,8 @@ def get_user_command(argv):
                           options.n_fruits,
                           options.fast_run,
                           options.graphics_off,
-                          options.use_keyboard_listener
+                          options.use_keyboard_listener,
+                          t
                           )
     elif options.demo_run:
         start_demo_game(options.n_agents,

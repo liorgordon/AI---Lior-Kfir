@@ -1,3 +1,5 @@
+import random
+
 from environment import Player, GameState, GameAction, get_next_state
 from utils import get_fitness
 import numpy as np
@@ -81,7 +83,7 @@ class MinimaxAgent(Player):
         worst_value = np.inf
         if state.turn == self.Turn.AGENT_TURN:
             for our_action in state.game_state.get_possible_actions(player_index=self.player_index):
-                h_value = self.minimax(self.TurnBasedGameState(state.game_state, our_action), D-1)
+                h_value = self.minimax(self.TurnBasedGameState(state.game_state, our_action), D)
                 if h_value > best_value:
                     best_value = h_value
             if not state.game_state.snakes[self.player_index].alive:
@@ -154,7 +156,7 @@ class AlphaBetaAgent(MinimaxAgent):
         worst_value = np.inf
         if state.agent_action is None:
             for our_action in state.game_state.get_possible_actions(player_index=self.player_index):
-                h_value = self.abminimax(self.TurnBasedGameState(state.game_state, our_action), D-1, alpha, beta)
+                h_value = self.abminimax(self.TurnBasedGameState(state.game_state, our_action), D, alpha, beta)
                 if h_value > best_value:
                     best_value = h_value
                     alpha = max(alpha, best_value)
@@ -245,9 +247,61 @@ def SAHC_sideways():
     if len(init_state) < N:
         filler = tuple([GameAction.STRAIGHT] * (N-len(init_state)))
         init_state += filler
-    print("the best combination I found was {} ", format(init_state))
+    print("the best combination I found was ", format(init_state))
     print("and I got " + str(M))
 
+
+def SAHC_sideways_vec():
+    """
+    Implement Steepest Ascent Hill Climbing with Sideways Steps Here.
+    We give you the freedom to choose an initial state as you wish. You may start with a deterministic state (think of
+    examples, what interesting options do you have?), or you may randomly sample one (you may use any distribution you
+    like). In any case, write it in your report and describe your choice.
+
+    an outline of the algorithm can be
+    1) pick an initial state
+    2) perform the search according to the algorithm
+    3) print the best moves vector you found.
+    :return:
+    """
+    N = 50
+    init_state = [GameAction.STRAIGHT] * N
+    sideways = 0
+    limit = N
+    for i in range(N - len(init_state)):
+        best_val = np.NINF
+        best_states = None
+        for j in range(3):
+            tmp = init_state
+            if j == 0:
+                tmp += (GameAction.RIGHT,)
+            elif j == 1:
+                tmp += (GameAction.STRAIGHT,)
+            elif j == 2:
+                tmp += (GameAction.LEFT,)
+            new_val = get_fitness(tmp)
+            if new_val > best_val:
+                best_val = new_val
+                best_states = [tmp]
+            elif new_val == best_val:
+                best_states.append(tmp)
+        state_fitness = get_fitness(init_state)
+        if best_val > state_fitness:
+            new_move = np.random.choice(len(best_states))
+            init_state += (best_states[new_move][-1], )
+            sideways = 0
+            M=best_val
+        elif best_val == state_fitness and sideways <= limit:
+            new_move = np.random.choice(len(best_states))
+            init_state += (best_states[new_move][-1],)
+            sideways = sideways + 1
+        else:
+            break
+    if len(init_state) < N:
+        filler = tuple([GameAction.STRAIGHT] * (N-len(init_state)))
+        init_state += filler
+    print("the best combination I found was {} ", format(init_state))
+    print("and I got " + str(M))
 
 def GetAction(j):
     switcher = {
@@ -258,20 +312,27 @@ def GetAction(j):
     return switcher.get(j)
 
 
-def local_search():
+def GetRandomInitialState():
+    choices = np.random.choice([0, 1, 2], size=4, replace=True)
+    init_tup = ()
+    for item in choices:
+        init_tup += (GetAction(item),)
+    return init_tup
+
+
+def SAHC_sideways_for_local(init_state):
     """
-    Implement your own local search algorithm here.
+    Implement Steepest Ascent Hill Climbing with Sideways Steps Here.
     We give you the freedom to choose an initial state as you wish. You may start with a deterministic state (think of
     examples, what interesting options do you have?), or you may randomly sample one (you may use any distribution you
     like). In any case, write it in your report and describe your choice.
 
     an outline of the algorithm can be
-    1) pick an initial state/states
+    1) pick an initial state
     2) perform the search according to the algorithm
     3) print the best moves vector you found.
     :return:
     """
-    init_state = (GameAction.STRAIGHT, GameAction.LEFT, GameAction.STRAIGHT, GameAction.RIGHT)
     N = 50
     sideways = 0
     limit = N
@@ -295,9 +356,8 @@ def local_search():
         state_fitness = get_fitness(init_state)
         if best_val > state_fitness:
             new_move = np.random.choice(len(best_states))
-            init_state += (best_states[new_move][-1],)
+            init_state += (best_states[new_move][-1], )
             sideways = 0
-            M = best_val
         elif best_val == state_fitness and sideways <= limit:
             new_move = np.random.choice(len(best_states))
             init_state += (best_states[new_move][-1],)
@@ -305,10 +365,36 @@ def local_search():
         else:
             break
     if len(init_state) < N:
-        filler = tuple([GameAction.STRAIGHT] * (N - len(init_state)))
+        filler = tuple([GameAction.STRAIGHT] * (N-len(init_state)))
         init_state += filler
-    print("the best combination I found was {} ", format(init_state))
-    print("and I got " + str(M))
+    return best_val, init_state
+
+
+def local_search():
+    """
+    Implement your own local search algorithm here.
+    We give you the freedom to choose an initial state as you wish. You may start with a deterministic state (think of
+    examples, what interesting options do you have?), or you may randomly sample one (you may use any distribution you
+    like). In any case, write it in your report and describe your choice.
+
+    an outline of the algorithm can be
+    1) pick an initial state/states
+    2) perform the search according to the algorithm
+    3) print the best moves vector you found.
+    :return:
+    """
+    max_val = np.NINF
+    best_moves = ()
+    rand = 6
+    for i in range(rand):
+        init_state = GetRandomInitialState()
+        val, moves = SAHC_sideways_for_local(init_state)
+        print("this is the val we got now: {}".format(val))
+        if val > max_val:
+            max_val = val
+            best_moves = moves
+    print("I got " + str(max_val))
+    print("with the moves: {}".format(best_moves))
 
     pass
 
@@ -321,5 +407,4 @@ class TournamentAgent(Player):
 
 if __name__ == '__main__':
     # SAHC_sideways()
-    SAHC_sideways_vector()
-    # local_search()
+    local_search()
