@@ -69,10 +69,10 @@ class MinimaxAgent(Player):
             return MinimaxAgent.Turn.AGENT_TURN if self.agent_action is None else MinimaxAgent.Turn.OPPONENTS_TURN
 
     def minimax(self, state : TurnBasedGameState, D : int):
-        if self.curr_turn.curr_turn == MinimaxAgent.Turn.AGENT_TURN:
-            print("entered minimax for agent, depth = {}\n".format(D))
-        if self.curr_turn.curr_turn == MinimaxAgent.Turn.OPPONENTS_TURN:
-            print("entered minimax for opponent, depth = {}\n".format(D))
+        # if self.curr_turn.curr_turn == MinimaxAgent.Turn.AGENT_TURN:
+        #     print("entered minimax for agent, depth = {}\n".format(D))
+        # if self.curr_turn.curr_turn == MinimaxAgent.Turn.OPPONENTS_TURN:
+        #     print("entered minimax for opponent, depth = {}\n".format(D))
         # if not state.is_within_grid_boundaries(state.snakes[self.player_index].head):
         #     print("in the fucking if")
         # if not state.snakes[self.player_index].alive:
@@ -86,8 +86,8 @@ class MinimaxAgent(Player):
                 h_value = self.minimax(self.TurnBasedGameState(state.game_state, our_action), D)
                 if h_value > best_value:
                     best_value = h_value
-            if not state.game_state.snakes[self.player_index].alive:
-                print("i entered agent with a dead snake, returning {}", format(best_value))
+            # if not state.game_state.snakes[self.player_index].alive:
+            #     print("i entered agent with a dead snake, returning {}", format(best_value))
             return best_value
         else:
             for opponents_actions in state.game_state.get_possible_actions_dicts_given_action(state.agent_action,
@@ -247,8 +247,8 @@ def SAHC_sideways():
     if len(init_state) < N:
         filler = tuple([GameAction.STRAIGHT] * (N-len(init_state)))
         init_state += filler
-    print("the best combination I found was ", format(init_state))
-    print("and I got " + str(M))
+    # print("the best combination I found was ", format(init_state))
+    # print("and I got " + str(M))
 
 
 def SAHC_sideways_vec():
@@ -300,8 +300,8 @@ def SAHC_sideways_vec():
     if len(init_state) < N:
         filler = tuple([GameAction.STRAIGHT] * (N-len(init_state)))
         init_state += filler
-    print("the best combination I found was {} ", format(init_state))
-    print("and I got " + str(M))
+    # print("the best combination I found was {} ", format(init_state))
+    # print("and I got " + str(M))
 
 def GetAction(j):
     switcher = {
@@ -389,12 +389,12 @@ def local_search():
     for i in range(rand):
         init_state = GetRandomInitialState()
         val, moves = SAHC_sideways_for_local(init_state)
-        print("this is the val we got now: {}".format(val))
+        # print("this is the val we got now: {}".format(val))
         if val > max_val:
             max_val = val
             best_moves = moves
-    print("I got " + str(max_val))
-    print("with the moves: {}".format(best_moves))
+    # print("I got " + str(max_val))
+    # print("with the moves: {}".format(best_moves))
 
     pass
 

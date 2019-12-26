@@ -535,7 +535,7 @@ class SnakesBackendSync:
             if game_state.current_winner is None or game_state.current_winner.length <= longest_snake_length:
                 game_state.current_winner = longest_this_turn
 
-    def run_game(self, human_speed=False, render=True, t):
+    def run_game(self, human_speed=False, render=True, t=None):
         elapsed = 0
         counter = 0
         if render:
@@ -563,7 +563,8 @@ class SnakesBackendSync:
             logging.info(f"Current Winner: {self.game_state.current_winner}")
 
             self.played_this_turn = []
-        t = elapsed / (2*counter)
+        t["time"] += elapsed / (2*counter)
+        t["score"] += self.game_state.current_winner.length
         print(f"Winner: {self.game_state.current_winner}")
 
     def get_living_agents(self):
