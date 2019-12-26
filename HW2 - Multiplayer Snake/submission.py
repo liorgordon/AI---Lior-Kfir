@@ -77,7 +77,7 @@ class MinimaxAgent(Player):
         #     print("in the fucking if")
         # if not state.snakes[self.player_index].alive:
         #     print("in the fucking if2")
-        if D == 0 or not state.game_state.snakes[self.player_index].alive:
+        if D == 0 or not state.game_state.snakes[self.player_index].alive or state.game_state.is_terminal_state:
             return heuristic(state.game_state, self.player_index)
         best_value = -np.inf
         worst_value = np.inf
@@ -107,7 +107,7 @@ class MinimaxAgent(Player):
         best_actions = []
         self.curr_turn.curr_turn = MinimaxAgent.Turn.OPPONENTS_TURN
         for our_action in state.get_possible_actions(player_index=self.player_index):
-            h_value = self.minimax(self.TurnBasedGameState(state, our_action), 4)
+            h_value = self.minimax(self.TurnBasedGameState(state, our_action), 2)
             if h_value > best_value:
                 best_value = h_value
                 best_actions = [our_action]
@@ -150,7 +150,7 @@ class AlphaBetaAgent(MinimaxAgent):
         #     print("in the fucking if")
         # if not state.snakes[self.player_index].alive:
         #     print("in the fucking if2")
-        if D == 0 or not state.game_state.snakes[self.player_index].alive:
+        if D == 0 or not state.game_state.snakes[self.player_index].alive or state.game_state.is_terminal_state:
             return heuristic(state.game_state, self.player_index)
         best_value = -np.inf
         worst_value = np.inf
