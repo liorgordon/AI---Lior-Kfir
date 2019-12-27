@@ -501,13 +501,15 @@ class TournamentAgent(Player):
         best_value = -np.inf
         best_actions = []
         self.curr_turn.curr_turn = MinimaxAgent.Turn.OPPONENTS_TURN
-        i=0
+        i = 0
         for our_action in state.get_possible_actions(player_index=self.player_index):
             t = time.time()
             h_value = self.abminimax(self.TurnBasedGameState(state, our_action), D_arr[i], -np.inf, np.inf)
             elapsed = time.time() - t
-            if elapsed < 15:
+            if elapsed < 15 and i < 4:
                 i += 1
+            if elapsed > 20 and i > 2:
+                i -= 1
             # elif elapsed
             if h_value > best_value:
                 best_value = h_value

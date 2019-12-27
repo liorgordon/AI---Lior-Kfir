@@ -563,8 +563,8 @@ class SnakesBackendSync:
             logging.info(f"Current Winner: {self.game_state.current_winner}")
 
             self.played_this_turn = []
-        # t["time"] += elapsed / (2*counter)
-        # t["score"] += self.game_state.current_winner.length
+        t["time"] += elapsed / (2*counter)
+        t["score"] += self.game_state.current_winner.length
         print(f"Winner: {self.game_state.current_winner}")
 
     def get_living_agents(self):
