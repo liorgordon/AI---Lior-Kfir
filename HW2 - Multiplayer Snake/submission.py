@@ -1,6 +1,6 @@
 import random
 import time
-
+from copy import copy
 from environment import Player, GameState, GameAction, get_next_state
 from utils import get_fitness
 import numpy as np
@@ -274,6 +274,7 @@ def SAHC_sideways_vec():
     """
     N = 50
     init_state = random_vec(N)
+    init_state = [GameAction.STRAIGHT] * N
     sideways = 0
     limit = N/5
     for i in range(N):
@@ -316,11 +317,11 @@ def GetAction(j):
     return switcher.get(j)
 
 
-def GetRandomInitialState():
-    choices = np.random.choice([0, 1, 2], size=4, replace=True)
-    init_tup = ()
+def GetRandomInitialState(N):
+    choices = np.random.choice([0, 1, 2], size=N, replace=True)
+    init_tup = []
     for item in choices:
-        init_tup += (GetAction(item),)
+        init_tup.append(GetAction(item))
     return init_tup
 
 
@@ -403,6 +404,46 @@ def local_search():
     pass
 
 
+def check_insert_to_newbeam(NewBeam, item, k):
+    item[2] += 1
+    item[1] = get_fitness(item[0])
+    if len(NewBeam) < k:
+        NewBeam.append([item[0].copy(), item[1], item[2]])
+    elif NewBeam[0][1] < item[1]:
+        NewBeam[0] = [item[0].copy(), item[1], item[2]]
+    pass
+
+
+def local_beam_search():
+    k = 4
+    N = 50
+    NewBeam = [[np.random.choice(list(GameAction), p=[0.1, 0.8, 0.1]) for _ in range(N)] for _ in range(k)]
+    NewBeam = [[state, get_fitness(state), 0] for state in NewBeam]
+    NewBeam = sorted(NewBeam, key=lambda x:x[1])
+    Beam = []
+    while True:
+        if Beam and Beam[-1][1] == NewBeam[-1][1]:
+            break
+        Beam = NewBeam.copy()
+        NewBeam = []
+        for item in Beam:
+            cur_turn = item[2]
+            if cur_turn == N:
+                check_insert_to_newbeam(NewBeam, item.copy(), k)
+                NewBeam = sorted(NewBeam, key=lambda x: x[1])
+            for j in range(3):
+                if j == 0:
+                    item[0][cur_turn] = GameAction.RIGHT
+                elif j == 1:
+                    item[0][cur_turn] = GameAction.STRAIGHT
+                elif j == 2:
+                    item[0][cur_turn] = GameAction.LEFT
+                check_insert_to_newbeam(NewBeam, item.copy(), k)
+                NewBeam = sorted(NewBeam, key=lambda x: x[1])
+    print("my moves were {}".format(Beam[-1][0]))
+    print("and I got {}".format(Beam[-1][1]))
+
+
 class TournamentAgent(Player):
     class Turn(Enum):
         AGENT_TURN = 'AGENT_TURN'
@@ -478,5 +519,6 @@ class TournamentAgent(Player):
 
 if __name__ == '__main__':
     # SAHC_sideways()
-    SAHC_sideways_vec()
+    # SAHC_sideways_vec()
     #local_search()
+    local_beam_search()
