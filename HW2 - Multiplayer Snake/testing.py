@@ -11,7 +11,7 @@ if __name__ == '__main__':
     t_Minimax = {'time': 0, 'score': 0}
     t_ABMinimax = {'time': 0, 'score': 0}
 
-    for i in range(10):
+    # for i in range(10):
         # # Greedy
         # start_custom_game('GreedyAgent', 'GreedyAgent', 500, 50, 50, 51, False, True, False, t=t_greedy)
         #
@@ -19,10 +19,13 @@ if __name__ == '__main__':
         # start_custom_game('BetterGreedyAgent', 'GreedyAgent', 500, 50, 50, 51, False, True, False, t=t_Bgreedy)
 
         # Minimax
-        start_custom_game('MinimaxAgent', 'GreedyAgent', 500, 50, 50, 51, False, True, False, t=t_Minimax)
+        # start_custom_game('MinimaxAgent', 'GreedyAgent', 500, 50, 50, 51, False, True, False, t=t_Minimax)
 
         # AB minimax
-        start_custom_game('AlphaBetaAgent', 'GreedyAgent', 500, 50, 50, 51, False, True, False, t=t_ABMinimax)
+        # start_custom_game('AlphaBetaAgent', 'GreedyAgent', 500, 50, 50, 51, False, True, False, t=t_ABMinimax)
+
+        #tournement
+    start_custom_game('TournamentAgent', 'GreedyAgent', 500, 50, 50, 51, True, False, False, t=t_ABMinimax)
 
     f = open("experiments.csv", 'a')
     # f.write("GreedyAgent, 1, {}, {}\n".format(t_greedy["time"], t_greedy["score"]))
