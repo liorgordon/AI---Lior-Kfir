@@ -1,12 +1,13 @@
 from KNN import normalize_data, KNN
 import pandas as pd
 import numpy as np
+from sklearn.metrics import accuracy_score
 
 
 
 if __name__ == '__main__':
-    train_df = pd.read_csv('train.csv', header=None)
-    test_df = pd.read_csv('test.csv', header=None)
+    train_df = pd.read_csv('train.csv')
+    test_df = pd.read_csv('test.csv')
     train_np = train_df.to_numpy()
     test_np = test_df.to_numpy()
     # print(len(test_np[0]))
@@ -16,6 +17,7 @@ if __name__ == '__main__':
     property_list = [x for x in range(len(test_np[0, :-1]))]
     max_acc = 0
     best_sub = ()
+    tmp_sub = 0
     flag = 0
     while True:
         for i in range(8):
@@ -27,8 +29,8 @@ if __name__ == '__main__':
             train_tmp = norm_train[:, (subset + (8,))]
             test_tmp = norm_test[:, subset]
             y_pred = KNN(train_tmp, test_tmp, 9)
-            # acc = acc_calc(y_test, y_pred)
-            acc = float(np.sum(y_test == y_pred) / len(y_test))
+            acc = accuracy_score(y_test, y_pred)
+            # acc = float(np.sum(y_test == y_pred) / len(y_test))
             # print("for element " + str(subset) +" recieved acc of " + str(acc) + "\n")
             if acc >= max_acc:
                 flag = 1
@@ -39,6 +41,6 @@ if __name__ == '__main__':
             break
         flag = 0
     print(list(best_sub))
-    print(max_acc)
+    # print(max_acc)
 
 

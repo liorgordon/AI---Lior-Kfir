@@ -43,8 +43,8 @@ def KNN2(DB, test_group, K):
 
 
 if __name__ == '__main__':
-    train_df = pd.read_csv('train.csv', header=None)
-    test_df = pd.read_csv('test.csv', header=None)
+    train_df = pd.read_csv('train.csv')
+    test_df = pd.read_csv('test.csv')
     train_np = train_df.to_numpy()
     test_np = test_df.to_numpy()
 
@@ -54,7 +54,7 @@ if __name__ == '__main__':
     y_pred = KNN2(norm_train, norm_test[:, :-1], 9)
     mat = metrics.confusion_matrix(y_test, y_pred)
     print("Confusion matrix:\n", mat, "\n")
-    print("err_w: ", 4 * mat[1, 0] + mat[0, 1])
+    # print("err_w: ", 4 * mat[1, 0] + mat[0, 1])
 
 
     # print("f1:\n", rep, "\n")

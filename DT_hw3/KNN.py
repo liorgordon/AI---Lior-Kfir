@@ -1,6 +1,5 @@
 from operator import itemgetter
-
-from sklearn import  metrics
+from sklearn import metrics
 import pandas as pd
 import numpy as np
 
@@ -14,17 +13,13 @@ def normalize_data(training, testing):
     return np.asarray(normal_train), np.asarray(normal_test)
 
 
-def dist(src, dst):
-    return np.linalg.norm(src-dst)
-
-
 def KNN(DB, test_group, K):
 
     prediction = []
     for sample in test_group:
         K_closest = []
         for db_point in DB:
-            cur_dist = dist(sample, db_point[:-1])
+            cur_dist = np.linalg.norm(sample - db_point[:-1])
             most_remote = max(K_closest, key=itemgetter(0))[0] if len(K_closest) >= K else 0
             if len(K_closest) < K or cur_dist < most_remote:
                 if len(K_closest) >= K:
@@ -42,8 +37,8 @@ def KNN(DB, test_group, K):
 
 
 if __name__ == '__main__':
-    train_df = pd.read_csv('train.csv', header=None)
-    test_df = pd.read_csv('test.csv', header=None)
+    train_df = pd.read_csv('train.csv')
+    test_df = pd.read_csv('test.csv')
     train_np = train_df.to_numpy()
     test_np = test_df.to_numpy()
 
@@ -53,6 +48,6 @@ if __name__ == '__main__':
     y_pred = KNN(norm_train, norm_test[:, :-1], 9)
     mat = metrics.confusion_matrix(y_test, y_pred)
     print("Confusion matrix:\n", mat, "\n")
-    print("err_w: ", 4 * mat[1, 0] + mat[0, 1])
+    # print("err_w: ", 4 * mat[1, 0] + mat[0, 1])
 
     # print("f1:\n", rep, "\n")

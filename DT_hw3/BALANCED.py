@@ -23,6 +23,5 @@ if __name__ == '__main__':
     tree_classifier = tree.DecisionTreeClassifier(criterion='entropy')
     tree_classifier.fit(x_train, y_train)
     y_pred = tree_classifier.predict(x_test)
-    rep = metrics.classification_report(y_test, y_pred)
-    print("f1:\n", rep, "\n")
+    print("Confusion matrix:\n{}\n".format(metrics.confusion_matrix(y_test, y_pred)))
 
